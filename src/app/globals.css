@@ -1,0 +1,221 @@
+@import 'leaflet/dist/leaflet.css';
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  width: 100%;
+  height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+}
+
+
+
+.wrapper{
+  h1{
+    padding-left: 30px;
+    font-size: 30px;
+  }
+  #error-p{
+    padding-left: 30px;
+    font-size: 16px;
+  }
+}
+
+
+.map-container{
+  width: 100%;
+  min-height: 90vh;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  border: 2px solid silver;
+  border-radius: 30px;
+  z-index: 1;
+}
+
+.route-form{
+  z-index: 2;
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translate(-50%, 0);
+
+  background-color: rgba(43, 43, 43, .8);
+
+  padding: 10px;
+  padding-top: 30px;
+
+  border-radius: 30px;
+  border: 2px solid silver;
+  width: 40%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .route-form-row{
+    width: 80%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 20px;
+
+    label{
+      text-align: right;
+    }
+
+    .input-suggestion{
+      width: 70%;
+      position: relative;
+      input{
+        border-radius: 20px;
+        width: 100%;
+        padding: 0 10px;
+        font-size: 16px;
+      }
+    }
+    
+  }
+
+  button{
+    font-size: 18px;
+    border-radius: 20px;
+    width: 50%;
+  }
+
+  .close-btn{
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    border: 2px solid white;
+    border-radius: 100%;
+    padding: 3px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    background-color: rgba(77, 155, 207, 0.384);
+    cursor: pointer;
+
+    &:hover{
+      background-color: rgba(125, 165, 192, 0.384);
+      transform: rotate(10deg);
+    }
+  }
+}
+
+.way-info{
+  z-index: 2;
+  position: absolute;
+  top: 60px;
+  right: 40px;
+  border: 2px solid silver;
+  background-color: rgba(43, 43, 43, .8);
+  border-radius: 30px;
+  padding: 20px;
+}
+
+.suggestion-list-container {
+
+  height: 300px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  transform: translate(0, 100%);
+  z-index: 3;
+  width: 100%;
+
+  .suggestions-list {
+
+    max-height: 300px;
+    overflow-y: auto;
+
+    padding: 5px;
+    border-radius: 10px;
+    background-color: rgba(31, 31, 31, 0.8);
+
+    li {
+      list-style: none;
+      background-color: gray;
+      color: black;
+      margin-top: 5px;
+
+      padding: 3px 10px;
+      border-radius: 5px;
+
+      &:hover{
+        cursor: pointer;
+        background-color: rgb(184, 184, 184);
+      }
+    }
+  }
+}
+
+
+.use-my-geo-btn{
+  z-index: 3;
+  width: 70px;
+  height: 70px;
+  border-radius: 100%;
+  position: absolute;
+  bottom: 10%;
+  left: 5%;
+  background-color: white;
+  border: 2px solid black;
+  padding: 5px;
+  box-shadow: 3px 3px 10px silver;
+
+  transition: .5s;
+
+  &:hover{
+    transform: scale(1.1) rotate(45deg);
+    background-color: rgb(163, 163, 163);
+    cursor: pointer;
+  }
+}
