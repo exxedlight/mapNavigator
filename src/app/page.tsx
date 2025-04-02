@@ -1,26 +1,43 @@
 "use client";
+import dynamic from 'next/dynamic';
 import React, { useEffect, useState } from 'react';
-import MapComponent from '../../components/MapComponent';
+//import MapComponent from '../../components/MapComponent';
 import Coordinates from '../../interfaces/Coordinates';
 import { LatLngExpression } from 'leaflet';
 import { fetchRoute } from '../../fetches/fetchRoute';
 import WaySearchPanel from '../../components/WaySearchPanel';
+import PointsContainer from '../../components/PointsContainer';
+
+const MapComponent = dynamic(() => import('../../components/MapComponent'), { ssr: false });
 
 const HomePage = () => {
   
   const [startCoordinates, setStartCoordinates] = useState<Coordinates | null>(null);
   const [endCoordinates, setEndCoordinates] = useState<Coordinates | null>(null);
+  const [additionalPoints, setAdditionalPoints] = useState<Coordinates[]>([]);
+
+  
   const [error, setError] = useState<string | null>(null);
   const [route, setRoute] = useState<LatLngExpression[] | null>(null);
   const [distance, setDistance] = useState<number | null>(0); // Расстояние в метрах
   const [duration, setDuration] = useState<number | null>(0); // Время в пути в секундах
   const [isDeviceGeoUsed, setIsDeviceGeoUsed] = useState(false);
 
+  const handleMapDoubleClick = (coordinates: Coordinates) => {
+    setAdditionalPoints((prevPoints) => [...prevPoints, coordinates]);
+  };
+
   useEffect(() => {
     const buildRoute = async () => {
       if (startCoordinates && endCoordinates) {
         try {
-          const route = await fetchRoute(startCoordinates, endCoordinates, setDistance, setDuration, setError);
+          const allPoints = [
+            startCoordinates,
+            ...additionalPoints,
+            endCoordinates,
+          ];
+    
+          const route = await fetchRoute(allPoints, setDistance, setDuration, setError);
           if (route) {
             setRoute(route);
           }
@@ -31,7 +48,7 @@ const HomePage = () => {
     };
 
     buildRoute();
-  }, [startCoordinates, endCoordinates]);
+  }, [startCoordinates, endCoordinates, additionalPoints]);
 
 
 
@@ -91,10 +108,20 @@ const HomePage = () => {
         </div>
       )}
 
+      <PointsContainer
+        points={additionalPoints}
+        setPoints={setAdditionalPoints}
+      />
+
       
 
       {startCoordinates || endCoordinates ? (
-        <MapComponent start={startCoordinates} end={endCoordinates} route={route} />
+        <MapComponent
+        start={startCoordinates}
+        end={endCoordinates}
+        route={route}
+        onMapDoubleClick={handleMapDoubleClick} // Передаем функцию в MapComponent
+      />
       ) : (
         <p className='map-container'>Введіть адреси для відображення карти.</p>
       )}

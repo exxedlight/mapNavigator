@@ -1,12 +1,12 @@
-// components/MapComponent.tsx
+"use client";
+import { useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import MapComponentProps from '../interfaces/MapComponentProps';
 import Coordinates from '../interfaces/Coordinates';
 
-//  Компонент мапи для сторінки
-const MapComponent: React.FC<MapComponentProps> = ({ start, end, route }) => {
+const MapComponent: React.FC<MapComponentProps> = ({ start, end, route, onMapDoubleClick }) => {
   const customIcon = new L.Icon({
     iconUrl: '/marker-icon.png',
     iconSize: [30, 30],
@@ -21,15 +21,49 @@ const MapComponent: React.FC<MapComponentProps> = ({ start, end, route }) => {
     popupAnchor: [1, -34],
   });
 
-  // Центр карти за замовчуванням (Київ)
   const defaultCenter: Coordinates = { lat: 50.27, lng: 30.31 };
   const center = start || defaultCenter;
 
-  // Координати у формат LatLngExpression[]
-  const linePositions = start && end ? [[start.lat, start.lng], [end.lat, end.lng]] : [];
+  // Создаем реф для карты
+  const mapRef = useRef<L.Map | null>(null);
+
+  // Эффект для добавления обработчика двойного клика
+  useEffect(() => {
+    if (mapRef.current) {
+      const map = mapRef.current;
+
+      // Отключаем стандартное увеличение масштаба при двойном клике
+      map.doubleClickZoom.disable();
+
+      // Добавляем обработчик двойного клика
+      map.on('dblclick', (e: L.LeafletMouseEvent) => {
+        const { lat, lng } = e.latlng;
+        onMapDoubleClick({ lat, lng });
+      });
+
+      // Возвращаем функцию очистки для удаления обработчика
+      return () => {
+        map.off('dblclick');
+        map.doubleClickZoom.enable(); // Восстанавливаем стандартное поведение при размонтировании
+      };
+    }
+  }, [onMapDoubleClick]);
+
+  if(typeof window == 'undefined'){
+    return (
+      <></>
+    )
+  }
 
   return (
-    <MapContainer center={center} zoom={13} className='map-container'>
+    <MapContainer
+      ref={(map) => {
+        mapRef.current = map;
+      }}
+      center={center}
+      zoom={13}
+      className='map-container'
+    >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -48,13 +82,6 @@ const MapComponent: React.FC<MapComponentProps> = ({ start, end, route }) => {
           </Popup>
         </Marker>
       )}
-
-      {
-        //  Пряма лінія від точки1 до точки2
-        /*linePositions.length > 0 && <Polyline positions={linePositions as any} color="blue" />*/
-      }
-
-      {/* Маршрут (автомобільний) */}
       {route && <Polyline positions={route} color="blue" />}
     </MapContainer>
   );
