@@ -1,9 +1,8 @@
 import { LatLngExpression } from "leaflet";
 import Coordinates from "./Coordinates";
+import { PageData } from "./PageData";
 
 export default interface MapComponentProps{
-    start: Coordinates | null;
-    end: Coordinates | null;
-    route: LatLngExpression[] | null;   //  автомобільний маршрут
-    onMapDoubleClick: (coordinates: Coordinates) => void;
+    data: PageData;
+    setData: React.Dispatch<React.SetStateAction<PageData>>;
 }

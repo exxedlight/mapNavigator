@@ -1,64 +1,74 @@
 "use client";
 import dynamic from 'next/dynamic';
 import React, { useEffect, useState } from 'react';
-//import MapComponent from '../../components/MapComponent';
 import Coordinates from '../../interfaces/Coordinates';
-import { LatLngExpression } from 'leaflet';
 import { fetchRoute } from '../../fetches/fetchRoute';
 import WaySearchPanel from '../../components/WaySearchPanel';
 import PointsContainer from '../../components/PointsContainer';
+import { PageData } from '../../interfaces/PageData';
 
-const MapComponent = dynamic(() => import('../../components/MapComponent'), { ssr: false });
+const MapComponent = dynamic(() => import('../../components/MapComponent/MapComponent'), { ssr: false });
 
 const HomePage = () => {
-  
-  const [startCoordinates, setStartCoordinates] = useState<Coordinates | null>(null);
-  const [endCoordinates, setEndCoordinates] = useState<Coordinates | null>(null);
-  const [additionalPoints, setAdditionalPoints] = useState<Coordinates[]>([]);
 
-  
-  const [error, setError] = useState<string | null>(null);
-  const [route, setRoute] = useState<LatLngExpression[] | null>(null);
-  const [distance, setDistance] = useState<number | null>(0); // Расстояние в метрах
-  const [duration, setDuration] = useState<number | null>(0); // Время в пути в секундах
-  const [isDeviceGeoUsed, setIsDeviceGeoUsed] = useState(false);
-
-  const handleMapDoubleClick = (coordinates: Coordinates) => {
-    setAdditionalPoints((prevPoints) => [...prevPoints, coordinates]);
-  };
+  const [data, setData] = useState<PageData>({
+    startCoordinates: null,
+    endCoordinates: null,
+    additionalPoints: [],
+    error: null,
+    route: null,
+    distance: 0,
+    duration: 0,
+    isDeviceGeoUsed: false,
+    isTrafficDrawed: false
+  });
 
   useEffect(() => {
     const buildRoute = async () => {
-      if (startCoordinates && endCoordinates) {
+      if (data.startCoordinates && data.endCoordinates) {
         try {
           const allPoints = [
-            startCoordinates,
-            ...additionalPoints,
-            endCoordinates,
+            data.startCoordinates,
+            ...data.additionalPoints,
+            data.endCoordinates,
           ];
-    
-          const route = await fetchRoute(allPoints, setDistance, setDuration, setError);
+
+          const route = await fetchRoute(allPoints, setData);
           if (route) {
-            setRoute(route);
+            setData((prev) => ({
+              ...prev,
+              route: route
+            }));
           }
         } catch (err) {
-          setError(`Помилка при побудові маршруту: ${(err as Error).message}`);
+          setData((prev) => ({
+            ...prev,
+            error: `Помилка при побудові маршруту: ${(err as Error).message}`
+          }));
         }
       }
     };
 
     buildRoute();
-  }, [startCoordinates, endCoordinates, additionalPoints]);
+  }, [
+    data.startCoordinates,
+    data.endCoordinates,
+    data.additionalPoints
+  ]);
 
 
 
   const handleGetCurrentLocation = () => {
 
-    if(isDeviceGeoUsed){
-      setIsDeviceGeoUsed(false);
-      setRoute(null);
-      setStartCoordinates(null);
-      setEndCoordinates(null);
+    if (data.isDeviceGeoUsed) {
+      setData((prev) => ({
+        ...prev,
+        isDeviceGeoUsed: false,
+        route: null,
+        startCoordinates: null,
+        endCoordinates: null,
+        additionalPoints: []
+      }));
       return;
     }
 
@@ -66,15 +76,25 @@ const HomePage = () => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          setStartCoordinates({ lat: latitude, lng: longitude });
-          setIsDeviceGeoUsed(true);
+
+          setData((prev) => ({
+            ...prev,
+            startCoordinates: { lat: latitude, lng: longitude },
+            isDeviceGeoUsed: true
+          }));
         },
         (error) => {
-          setError(`Помилка при отриманні геолокації: ${error.message}`);
+          setData((prev) => ({
+            ...prev,
+            error: `Помилка при отриманні геолокації: ${error.message}`
+          }));
         }
       );
     } else {
-      setError('Геолокація не підтримується вашим браузером.');
+      setData((prev) => ({
+        ...prev,
+        error: 'Геолокація не підтримується вашим браузером.'
+      }));
     }
   };
 
@@ -83,45 +103,54 @@ const HomePage = () => {
   return (
     <div className='wrapper'>
       <h1>Пошук маршруту</h1>
-      <p style={{ color: 'red' }} id='error-p'>{error ?? " "}</p>
+      <p style={{ color: 'red' }} id='error-p'>{data.error ?? " "}</p>
 
       <WaySearchPanel
-        setError={setError}
-        setStartCoordinates={setStartCoordinates}
-        setEndCoordinates={setEndCoordinates}
-        isDeviceGeoUsed={isDeviceGeoUsed}
-        />
+        data={data}
+        setData={setData}
+      />
 
-      <img 
-        className='use-my-geo-btn' 
-        src='/use-geo.png' 
+      <img
+        className='use-my-geo-btn'
+        src='/use-geo.png'
         onClick={handleGetCurrentLocation}
-        style={{
-          backgroundColor: isDeviceGeoUsed ? "green" : "white"
-        }}
-        />
+        style={{ backgroundColor: data.isDeviceGeoUsed ? "green" : "white" }}
+      />
 
-      {distance != null && duration != null && (
+      <div
+        className='use-traffic-layer'
+        style={{ backgroundColor: data.isTrafficDrawed ? "green" : "white" }}
+        onClick={(e) => {
+          setData((prev) => ({
+            ...prev, isTrafficDrawed: !prev.isTrafficDrawed
+          }))
+        }}>
+        <i
+          className='bx bxs-traffic'
+        />
+      </div>
+
+
+
+      {data.distance != null && data.duration != null && (
         <div className='way-info'>
-          <label>Дистанція: <p>{(distance! / 1000).toFixed(2)} км</p></label>
-          <label>Час в дорозі: <p>{Math.floor(duration! / 60)} хв</p></label>
+          <label>Дистанція: <p>{(data.distance! / 1000).toFixed(2)} км</p></label>
+          <label>Час в дорозі: <p>{Math.floor(data.duration! / 60)} хв</p></label>
         </div>
       )}
 
       <PointsContainer
-        points={additionalPoints}
-        setPoints={setAdditionalPoints}
+        points={data.additionalPoints}
+        setData={setData}
       />
 
-      
 
-      {startCoordinates || endCoordinates ? (
+
+      {data.startCoordinates || data.endCoordinates ? (
         <MapComponent
-        start={startCoordinates}
-        end={endCoordinates}
-        route={route}
-        onMapDoubleClick={handleMapDoubleClick} // Передаем функцию в MapComponent
-      />
+          data={data}
+          setData={setData}
+        />
       ) : (
         <p className='map-container'>Введіть адреси для відображення карти.</p>
       )}

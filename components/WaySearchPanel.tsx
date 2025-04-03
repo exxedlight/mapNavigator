@@ -1,17 +1,20 @@
+"use client";
 import React, { useState } from "react";
-import WaySearchComponentProps from "../interfaces/WaySearchComponentProps";
 import SuggestionsList from "./SuggestionsList";
 import { fetchSuggestions } from "../fetches/fetchSuggestion";
 import { fetchCoordinates } from "../fetches/fetchCoordinates";
+import { PageData } from "../interfaces/PageData";
+import Coordinates from "../interfaces/Coordinates";
+
+interface WaySearchPanelProps{
+    data: PageData;
+    setData: React.Dispatch<React.SetStateAction<PageData>>;
+}
 
 
-
-const WaySearchPanel: React.FC<WaySearchComponentProps> = ({
-    setError,
-    setStartCoordinates,
-    setEndCoordinates,
-    isDeviceGeoUsed
-}) => {
+const WaySearchPanel = (
+    {data, setData}: WaySearchPanelProps
+) => {
 
     const [startAddress, setStartAddress] = useState('');
     const [endAddress, setEndAddress] = useState('');
@@ -29,15 +32,36 @@ const WaySearchPanel: React.FC<WaySearchComponentProps> = ({
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError(null);
 
-        if ((!startAddress && !isDeviceGeoUsed) || !endAddress) {
-            setError('Заповніть всі поля.');
+        setData((prev) => ({
+            ...prev,
+            error: null
+        }));
+
+        if ((!startAddress && !data.isDeviceGeoUsed) || !endAddress) {
+            setData((prev) => ({
+                ...prev,
+                error: 'Заповніть всі поля.'
+            }));
             return;
         }
 
-        if(!isDeviceGeoUsed) await fetchCoordinates(startAddress, setStartCoordinates, setError);
-        await fetchCoordinates(endAddress, setEndCoordinates, setError);
+        let startCoods: Coordinates = {lat: 0, lng: 0};
+        let endCoords: Coordinates = {lat: 0, lng: 0};
+
+        if(!data.isDeviceGeoUsed) 
+            startCoods = await fetchCoordinates(startAddress);
+        else
+            startCoods = data.startCoordinates as Coordinates;
+        endCoords = await fetchCoordinates(endAddress);
+
+        alert(JSON.stringify(startCoods, null, 2) + '\n' + JSON.stringify(endCoords, null, 2));
+
+        setData((prev) => ({
+            ...prev,
+            startCoordinates: startCoods,
+            endCoordinates: endCoords,
+        }))
     };
 
 
@@ -54,13 +78,18 @@ const WaySearchPanel: React.FC<WaySearchComponentProps> = ({
     const handleStartAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setStartAddress(e.target.value);
         handleInputChange(e, setStartAddress, setStartSuggestions);
-        setError(null);
+        
+        setData((prev) => ({
+            ...prev, error: null
+        }))
     };
 
     const handleEndAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setEndAddress(e.target.value);
         handleInputChange(e, setEndAddress, setEndSuggestions);
-        setError(null);
+        setData((prev) => ({
+            ...prev, error: null
+        }))
     };
 
     return (
@@ -71,7 +100,7 @@ const WaySearchPanel: React.FC<WaySearchComponentProps> = ({
             {isFormShown && (
                 <>
 
-                    {!isDeviceGeoUsed && (
+                    {!data.isDeviceGeoUsed && (
                         <div className='route-form-row'>
                             <label htmlFor="start">Звідки:</label>
                             <div className='input-suggestion'>

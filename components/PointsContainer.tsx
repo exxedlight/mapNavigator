@@ -1,13 +1,14 @@
 import { useState } from "react";
 import Coordinates from "../interfaces/Coordinates";
+import { PageData } from "../interfaces/PageData";
 
 interface PointsContainerProps{
     points: Coordinates[];
-    setPoints: React.Dispatch<React.SetStateAction<Coordinates[]>>;
+    setData: React.Dispatch<React.SetStateAction<PageData>>;
 }
 
 const PointsContainer = (
-    {points, setPoints} : PointsContainerProps
+    {points, setData} : PointsContainerProps
 ) => {
     const [panelVisible, setPanelVisible] = useState(false);
 
@@ -36,11 +37,11 @@ const PointsContainer = (
             
             <div className="items">
                 {points.map((point, i) => (
-                    <div className="item">
+                    <div className="item" key={i}>
                         <p>{point.lat.toFixed(2)} / {point.lng.toFixed(2)}</p>
                         <button
                             onClick={(e) => {
-                                setPoints((prev) => prev.filter((_, index) => index !== i));
+                                setData((prev) => ({...prev, additionalPoints: prev.additionalPoints.filter((_, index) => index != i)}));
                             }}
                         >X</button>
                     </div>

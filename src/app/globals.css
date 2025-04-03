@@ -208,15 +208,12 @@ a {
   }
 }
 
-
-.use-my-geo-btn{
+.use-my-geo-btn, .use-traffic-layer{
   z-index: 3;
   width: 70px;
   height: 70px;
   border-radius: 100%;
   position: absolute;
-  bottom: 10%;
-  left: 5%;
   background-color: white;
   border: 2px solid black;
   padding: 5px;
@@ -229,6 +226,23 @@ a {
     background-color: rgb(163, 163, 163);
     cursor: pointer;
   }
+}
+
+.use-my-geo-btn{
+  bottom: 10%;
+  left: 5%;
+  
+}
+
+.use-traffic-layer{
+  bottom: 10%;
+  right: 5%;
+  color: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 3em;
 }
 
 .points-container{

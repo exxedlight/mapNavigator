@@ -1,14 +1,13 @@
 import axios from "axios";
 import Coordinates from "../interfaces/Coordinates";
+import { PageData } from "../interfaces/PageData";
 
 export const fetchRoute = async (
-    points: Coordinates[], // Массив точек (начальная, промежуточные, конечная)
-    setDistance: (distance: number | null) => void,
-    setDuration: (duration: number | null) => void,
-    setError: (error: string | null) => void
+    points: Coordinates[],
+    setData: React.Dispatch<React.SetStateAction<PageData>>,
 ) => {
     try {
-        // Формируем строку координат для запроса
+        
         const coordinates = points.map(({ lat, lng }) => `${lng},${lat}`).join(';');
 
         // Запрос к OSRM
@@ -16,30 +15,36 @@ export const fetchRoute = async (
             `https://router.project-osrm.org/route/v1/driving/${coordinates}`,
             {
                 params: {
-                    overview: 'full', // Полный маршрут
-                    geometries: 'geojson', // Формат ответа
+                    overview: 'full',
+                    geometries: 'geojson',
                 },
             }
         );
 
-        // Проверяем, что маршрут существует
         if (response.data && response.data.routes && response.data.routes.length > 0) {
             const route = response.data.routes[0].geometry.coordinates;
 
-            // Устанавливаем расстояние и время
-            setDistance(response.data.routes[0].distance);
-            setDuration(response.data.routes[0].duration);
-
-            // Возвращаем маршрут в формате LatLngExpression
+            setData((prev) => ({
+                ...prev,
+                distance: response.data.routes[0].distance,
+                duration: response.data.routes[0].duration
+            }))
+            
             return route.map(([lng, lat]: [number, number]) => [lat, lng]);
         } else {
             throw new Error('Маршрут не знайдено');
         }
     } catch (err) {
         if (err instanceof Error) {
-            setError(`Помилка отримання маршруту: ${err.message}`);
+            setData((prev) => ({
+                ...prev,
+                error: `Помилка отримання маршруту: ${err.message}`
+            }));
         } else {
-            setError('Невідома помилка отримання маршруту');
+            setData((prev) => ({
+                ...prev,
+                error: 'Невідома помилка отримання маршруту'
+            }));
         }
         return null;
     }
