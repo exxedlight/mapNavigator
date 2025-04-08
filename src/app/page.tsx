@@ -6,6 +6,7 @@ import { PageData } from '../interfaces/PageData';
 import PointsContainer from '@/components/PointsContainer/PointsContainer';
 import WaySearchPanel from '@/components/WaySearchPanel/WaySearchPanel';
 import Header from '@/components/Header/Header';
+import FunctionalButtons from '@/components/FunctionalButtons/FunctionalButtons';
 const MapComponent = dynamic(() => import('@/components/MapComponent/MapComponent'), { ssr: false });
 
 
@@ -20,7 +21,8 @@ const HomePage = () => {
     distance: 0,
     duration: 0,
     isDeviceGeoUsed: false,
-    isTrafficDrawed: false
+    isTrafficDrawed: false,
+    isWeatherDrawed: false,
   });
 
   useEffect(() => {
@@ -58,48 +60,6 @@ const HomePage = () => {
 
 
 
-  const handleGetCurrentLocation = () => {
-
-    if (data.isDeviceGeoUsed) {
-      setData((prev) => ({
-        ...prev,
-        isDeviceGeoUsed: false,
-        route: null,
-        startCoordinates: null,
-        endCoordinates: null,
-        additionalPoints: []
-      }));
-      return;
-    }
-
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-
-          setData((prev) => ({
-            ...prev,
-            startCoordinates: { lat: latitude, lng: longitude },
-            isDeviceGeoUsed: true
-          }));
-        },
-        (error) => {
-          setData((prev) => ({
-            ...prev,
-            error: `Помилка при отриманні геолокації: ${error.message}`
-          }));
-        }
-      );
-    } else {
-      setData((prev) => ({
-        ...prev,
-        error: 'Геолокація не підтримується вашим браузером.'
-      }));
-    }
-  };
-
-
-
   return (
     <div className='wrapper'>
       <Header/>
@@ -111,25 +71,11 @@ const HomePage = () => {
         setData={setData}
       />
 
-      <img
-        className='use-my-geo-btn'
-        src='/use-geo.png'
-        onClick={handleGetCurrentLocation}
-        style={{ backgroundColor: data.isDeviceGeoUsed ? "green" : "white" }}
-      />
-
-      <div
-        className='use-traffic-layer'
-        style={{ backgroundColor: data.isTrafficDrawed ? "green" : "white" }}
-        onClick={(e) => {
-          setData((prev) => ({
-            ...prev, isTrafficDrawed: !prev.isTrafficDrawed
-          }))
-        }}>
-        <i
-          className='bx bxs-traffic'
-        />
-      </div>
+      
+<FunctionalButtons
+    data={data}
+    setData={setData}
+  /> 
 
 
 

@@ -110,43 +110,6 @@ a {
   }
 }
 
-.use-my-geo-btn, .use-traffic-layer{
-  z-index: 3;
-  width: 70px;
-  height: 70px;
-  border-radius: 100%;
-  position: absolute;
-  background-color: white;
-  border: 2px solid black;
-  padding: 5px;
-  box-shadow: 3px 3px 10px silver;
-
-  transition: .5s;
-
-  &:hover{
-    transform: scale(1.1) rotate(45deg);
-    background-color: rgb(163, 163, 163);
-    cursor: pointer;
-  }
-}
-
-.use-my-geo-btn{
-  bottom: 10%;
-  left: 5%;
-  
-}
-
-.use-traffic-layer{
-  bottom: 20%;
-  left: 5%;
-  color: black;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  font-size: 3em;
-}
-
 @media (width <= 1000px) {
   .way-info{
     right: 10px;

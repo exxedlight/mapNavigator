@@ -1,0 +1,40 @@
+.use-my-geo-btn, .use-traffic-layer, .use-weather-layer{
+    z-index: 3;
+    width: 70px;
+    height: 70px;
+    border-radius: 100%;
+    position: absolute;
+    left: 5%;
+    border: 2px solid black;
+    padding: 5px;
+    box-shadow: 3px 3px 10px silver;
+  
+    transition: .5s;
+  
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  
+    color: black;
+  
+    font-size: 3em;
+  
+    &:hover{
+      transform: scale(1.1) rotate(45deg);
+      cursor: pointer;
+    }
+  }
+  
+  .use-my-geo-btn{
+    bottom: 10%;
+  }
+  
+  .use-traffic-layer{
+    bottom: 20%;
+  }
+  
+  .use-weather-layer{
+    bottom: 30%;
+  }

@@ -11,4 +11,5 @@ export interface PageData{
   duration: number | null;
   isDeviceGeoUsed: boolean;
   isTrafficDrawed: boolean;
+  isWeatherDrawed: boolean;
 }
