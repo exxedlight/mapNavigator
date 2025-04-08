@@ -1,10 +1,11 @@
 "use client";
 import React, { useState } from "react";
-import SuggestionsList from "./SuggestionsList";
-import { fetchSuggestions } from "../fetches/fetchSuggestion";
-import { fetchCoordinates } from "../fetches/fetchCoordinates";
-import { PageData } from "../interfaces/PageData";
-import Coordinates from "../interfaces/Coordinates";
+import SuggestionsList from "./SuggestionsList/SuggestionsList";
+import { PageData } from "@/interfaces/PageData";
+import Coordinates from "@/interfaces/Coordinates";
+import { fetchCoordinates } from "@/fetches/fetchCoordinates";
+import { fetchSuggestions } from "@/fetches/fetchSuggestion";
+import "./style.css";
 
 interface WaySearchPanelProps{
     data: PageData;
@@ -55,7 +56,8 @@ const WaySearchPanel = (
             startCoods = data.startCoordinates as Coordinates;
         endCoords = await fetchCoordinates(endAddress);
 
-        alert(JSON.stringify(startCoods, null, 2) + '\n' + JSON.stringify(endCoords, null, 2));
+        //  DEBUG
+        //alert(JSON.stringify(startCoods, null, 2) + '\n' + JSON.stringify(endCoords, null, 2));
 
         setData((prev) => ({
             ...prev,

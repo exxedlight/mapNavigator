@@ -1,6 +1,7 @@
+import Coordinates from "@/interfaces/Coordinates";
+import { PageData } from "@/interfaces/PageData";
 import { useState } from "react";
-import Coordinates from "../interfaces/Coordinates";
-import { PageData } from "../interfaces/PageData";
+import "./style.css";
 
 interface PointsContainerProps{
     points: Coordinates[];
@@ -12,6 +13,12 @@ const PointsContainer = (
 ) => {
     const [panelVisible, setPanelVisible] = useState(false);
 
+    const clearAdditionalPoints = () => {
+        setData((prev) => ({
+            ...prev,
+            additionalPoints: []
+        }));
+    }
 
     if(!panelVisible){
         return (
@@ -29,6 +36,10 @@ const PointsContainer = (
         <div className="points-container">
             <div className="header">
                 <h3>Додаткові точки</h3>
+                <i 
+                    className='bx bx-trash-alt'
+                    onClick={clearAdditionalPoints}
+                />
                 <i 
                     className='bx bx-chevrons-left' 
                     onClick={(e) => setPanelVisible(false)}

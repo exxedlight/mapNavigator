@@ -1,6 +1,6 @@
+import Coordinates from "@/interfaces/Coordinates";
+import { PageData } from "@/interfaces/PageData";
 import axios from "axios";
-import Coordinates from "../interfaces/Coordinates";
-import { PageData } from "../interfaces/PageData";
 
 export const fetchRoute = async (
     points: Coordinates[],

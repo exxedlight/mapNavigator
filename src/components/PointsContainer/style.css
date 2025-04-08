@@ -1,0 +1,67 @@
+.points-container{
+    position: absolute;
+    top: 30vh;
+    left: 10px;
+    width: 300px;
+    z-index: 99;
+  
+    .header{
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+  
+      padding: 10px;
+      background-color: rgba(31, 31, 31, 0.8);
+      border-radius: 10px;
+  
+      h3{
+        width: max-content;
+      }
+    }
+  
+    i{
+      width: 30px;
+      height: 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border-radius: 100%;
+      background-color: rgba(0,0,0,.8);
+      font-size: 1.5em;
+      transition: .3s;
+  
+      &:hover{
+        scale: 1.1;
+        cursor: pointer;
+      }
+    }
+  
+    .items{
+      margin-top: 10px;
+      padding: 10px;
+      background-color: rgba(31, 31, 31, 0.8);
+      border-radius: 10px;
+      max-height: 200px;
+      overflow-y: auto;
+  
+      .item{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        background-color: rgba(255,255,255,.2);
+        padding: 5px;
+        border-radius: 5px;
+        margin-bottom: 5px;
+  
+        button{
+          width: 20px;
+          height: 20px;
+          border-radius: 100%;
+        }
+      }
+    }
+  }

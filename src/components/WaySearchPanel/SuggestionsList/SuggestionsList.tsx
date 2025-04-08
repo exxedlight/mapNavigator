@@ -1,4 +1,5 @@
 "use client";
+import "./style.css";
 
 // Список запропонованих варіантів точок на основі введення
 const SuggestionsList = ({

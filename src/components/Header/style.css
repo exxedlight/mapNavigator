@@ -1,0 +1,21 @@
+header{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    padding-top: 10px;
+    
+    i{
+        font-size: 1.3em;
+        border: 1px solid silver;
+        border-radius: 100%;
+        padding: 5px;
+
+        &:hover{
+            background-color: white;
+            color: black;
+        }
+    }
+}

@@ -1,0 +1,97 @@
+.route-form {
+    z-index: 2;
+    position: absolute;
+    top: 70px;
+    left: 10%;
+
+    background-color: rgba(43, 43, 43, .8);
+
+    padding: 10px;
+    padding-top: 30px;
+
+    border-radius: 30px;
+    border: 2px solid silver;
+    width: 30%;
+    min-width: 300px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .route-form-row {
+        width: 80%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+
+        margin-bottom: 20px;
+
+        label {
+            text-align: right;
+        }
+
+        .input-suggestion {
+            width: 70%;
+            position: relative;
+
+            input {
+                border-radius: 20px;
+                width: 100%;
+                padding: 0 10px;
+                font-size: 16px;
+                text-align: center;
+            }
+        }
+
+    }
+
+    button {
+        font-size: 18px;
+        border-radius: 20px;
+        width: 80%;
+        max-width: 300px;
+    }
+
+    .close-btn {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        border: 2px solid white;
+        border-radius: 100%;
+        padding: 3px;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        background-color: rgba(77, 155, 207, 0.384);
+        cursor: pointer;
+
+        &:hover {
+            background-color: rgba(125, 165, 192, 0.384);
+            transform: rotate(10deg);
+        }
+    }
+}
+
+@media (width <= 1000px){
+    .route-form{
+        left: 10px;
+        font-size: .8em;
+    
+        .route-form-row{
+          .input-suggestion{
+          input{
+            font-size: 12px;
+          }
+        }
+        }
+        button{
+          font-size: 1.2em;
+        }
+      }
+}

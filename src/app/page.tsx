@@ -1,13 +1,13 @@
 "use client";
 import dynamic from 'next/dynamic';
 import React, { useEffect, useState } from 'react';
-import Coordinates from '../../interfaces/Coordinates';
-import { fetchRoute } from '../../fetches/fetchRoute';
-import WaySearchPanel from '../../components/WaySearchPanel';
-import PointsContainer from '../../components/PointsContainer';
-import { PageData } from '../../interfaces/PageData';
+import { fetchRoute } from '../fetches/fetchRoute';
+import { PageData } from '../interfaces/PageData';
+import PointsContainer from '@/components/PointsContainer/PointsContainer';
+import WaySearchPanel from '@/components/WaySearchPanel/WaySearchPanel';
+import Header from '@/components/Header/Header';
+const MapComponent = dynamic(() => import('@/components/MapComponent/MapComponent'), { ssr: false });
 
-const MapComponent = dynamic(() => import('../../components/MapComponent/MapComponent'), { ssr: false });
 
 const HomePage = () => {
 
@@ -102,7 +102,8 @@ const HomePage = () => {
 
   return (
     <div className='wrapper'>
-      <h1>Пошук маршруту</h1>
+      <Header/>
+
       <p style={{ color: 'red' }} id='error-p'>{data.error ?? " "}</p>
 
       <WaySearchPanel
@@ -134,8 +135,8 @@ const HomePage = () => {
 
       {data.distance != null && data.duration != null && (
         <div className='way-info'>
-          <label>Дистанція: <p>{(data.distance! / 1000).toFixed(2)} км</p></label>
-          <label>Час в дорозі: <p>{Math.floor(data.duration! / 60)} хв</p></label>
+          <label>Відстань: <p>{(data.distance! / 1000).toFixed(2)} км</p></label>
+          <label>Час: <p>{Math.floor(data.duration! / 60)} хв</p></label>
         </div>
       )}
 
