@@ -1,0 +1,50 @@
+.sos {
+    z-index: 3;
+    width: 70px;
+    height: 70px;
+    border-radius: 100%;
+    position: absolute;
+    right: 5%;
+    bottom: 20%;
+    border: 2px solid black;
+    padding: 5px;
+    box-shadow: 3px 3px 10px silver;
+
+    transition: .5s;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+    color: black;
+
+    font-size: 3em;
+
+    &:hover {
+        cursor: pointer;
+
+        i {
+            transform: scale(1.1) rotate(45deg);
+        }
+
+        .modal-price {
+            display: block;
+        }
+    }
+
+    .modal-price {
+        display: none;
+        position: absolute;
+        bottom: -40px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: .5em;
+        width: 100px;
+        border-radius: 10px;
+        background-color: black;
+        color: white;
+        text-align: center;
+    }
+}

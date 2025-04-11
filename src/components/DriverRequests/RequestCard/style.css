@@ -1,0 +1,30 @@
+.req-card{
+    margin-bottom: 10px;
+    padding: 5px;
+    border-radius: 10px;
+    border: 1px solid silver;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    label{
+        font-size: .9em;
+    }
+}
+.btns{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+
+    button{
+        width: 100%;
+        margin: 5px 0;
+        font-size: 1em;
+
+        border-radius: 10px;
+        background-color: rgba(255,255,255,.2);
+        padding: 5px 0;
+    }
+}

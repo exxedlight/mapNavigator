@@ -36,6 +36,7 @@ const WaySearchPanel = (
 
         setData((prev) => ({
             ...prev,
+            additionalPoints: [],
             error: null
         }));
 

@@ -1,16 +1,25 @@
 "use client";
-import { useState } from "react";
 import "./style.css";
+import LoginPanel from "../LoginPanel/LoginPanel";
+import React from "react";
 
-const Header = () => {
+export interface HeaderProps {
+    loggedIn: boolean; 
+    setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
-    const [isLoggedIn, setLoggedIn] = useState(false);
+const Header = (
+    {loggedIn, setLoggedIn} : HeaderProps
+) => {
 
     return (
         <header>
             <h1>Навігатор</h1>
-            <i className={`bx bx-log-${!isLoggedIn ? "in" : "out"}-circle`} />
-
+            
+            <LoginPanel
+                loggedIn={loggedIn}
+                setLoggedIn={setLoggedIn}
+            />
         </header>
     );
 }

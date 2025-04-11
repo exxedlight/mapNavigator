@@ -1,0 +1,15 @@
+.map-container {
+    transition: 0s;
+
+    width: 100%;
+    min-height: 90vh;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    border: 2px solid silver;
+    border-radius: 30px;
+    z-index: 1;
+}

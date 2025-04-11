@@ -4,6 +4,7 @@ import Coordinates from "./Coordinates";
 export interface PageData{
   startCoordinates: Coordinates | null;
   endCoordinates: Coordinates | null;
+  targetDestination: Coordinates | null;
   additionalPoints: Coordinates[];
   error: string | null;
   route: LatLngExpression[] | null;

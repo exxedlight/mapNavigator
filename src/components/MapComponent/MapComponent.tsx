@@ -1,13 +1,14 @@
 "use client";
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
-import L, { LatLngExpression } from 'leaflet';
+import L, { icon, LatLngExpression } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import "leaflet.vectorgrid";
 import MapComponentProps from '@/interfaces/MapComponentProps';
 import Coordinates from '@/interfaces/Coordinates';
 import { tomTomApiKey } from '../../../keys';
-import { customIcon, destinationIcon } from './icons';
+import { carIcon, checkIcon, customIcon, endIcon } from './icons';
+import "./style.css";
 
 const MapComponent = (
   { data, setData }: MapComponentProps
@@ -22,136 +23,127 @@ const MapComponent = (
   const defaultCenter: Coordinates = { lat: 50.27, lng: 30.31 };
   const mapRef = useRef<L.Map | null>(null);
   const weatherRef = useRef<any>(null);
+  let ignoreTap = false;
 
-  const handleMapDoubleClick = (coordinates: Coordinates) => {
+  const handleMapDoubleClick = (e: L.LeafletMouseEvent) => {
     setData((prevData) => ({
       ...prevData,
-      additionalPoints: [...prevData.additionalPoints, coordinates],
+      additionalPoints: [...prevData.additionalPoints, e.latlng],
     }));
-  };
-
-  {/* LOAD MAP */}
-  useEffect(() => {
-    if (mapRef.current && data.startCoordinates) {
-      mapRef.current.setView(data.startCoordinates, 13);
-    }
-  }, [data.startCoordinates]);
-
-  {/* DOUBLE CLICK */ }
-  useEffect(() => {
-    if (mapRef.current) {
-      const map = mapRef.current;
-
-      map.doubleClickZoom.disable();
-
-      map.on('dblclick', (e: L.LeafletMouseEvent) => {
-        const { lat, lng } = e.latlng;
-        handleMapDoubleClick({ lat, lng });
-      });
+  }
 
 
-      return () => {
-        map.off('dblclick');
-        map.doubleClickZoom.enable();
-      };
-    }
-  }, [handleMapDoubleClick]);
-
-  {/* TAP */ }
-  useEffect(() => {
-    if (!mapRef.current) return;
-  
-    const map = mapRef.current;
+  // TAP POINTS ADDING
+  const attachTapHandler = (map: L.Map) => {
     const container = map.getContainer();
-  
+
     let touchStartTime = 0;
     let startX = 0;
     let startY = 0;
-  
-    const maxTapDuration = 300; // мс
-    const maxMoveThreshold = 10; // пикселей
-  
+
+    const maxTapDuration = 300; // ms
+    const maxMoveThreshold = 10; // px
+
     const onTouchStart = (e: TouchEvent) => {
       if (e.touches.length !== 1) return;
-  
+
       const touch = e.touches[0];
       touchStartTime = Date.now();
       startX = touch.clientX;
       startY = touch.clientY;
     };
-  
+
     const onTouchEnd = (e: TouchEvent) => {
-      if (!mapRef.current || e.changedTouches.length !== 1) return;
+      if (!mapRef.current || e.changedTouches.length !== 1 || ignoreTap) return;
   
       const touch = e.changedTouches[0];
       const duration = Date.now() - touchStartTime;
       const deltaX = touch.clientX - startX;
       const deltaY = touch.clientY - startY;
       const distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
-  
+
       if (duration < maxTapDuration && distance < maxMoveThreshold) {
-        const containerPoint = mapRef.current.mouseEventToContainerPoint({
+        const containerPoint = map.mouseEventToContainerPoint({
           clientX: touch.clientX,
           clientY: touch.clientY,
         } as MouseEvent);
-  
-        const latlng = mapRef.current.containerPointToLatLng(containerPoint);
-        handleMapDoubleClick({ lat: latlng.lat, lng: latlng.lng });
+
+        const latlng = map.containerPointToLatLng(containerPoint);
+        ignoreTap = true;
+        setData((prevData) => ({
+          ...prevData,
+          additionalPoints: [...prevData.additionalPoints, latlng],
+        }));
+        setTimeout(() => {
+          ignoreTap = false;
+        }, 300);
       }
     };
-  
+
     container.addEventListener('touchstart', onTouchStart);
     container.addEventListener('touchend', onTouchEnd);
-  
+
     return () => {
       container.removeEventListener('touchstart', onTouchStart);
       container.removeEventListener('touchend', onTouchEnd);
     };
-  }, [handleMapDoubleClick]);
-  
-  {/* WEATHER UPDATE */}
-  /*useEffect(() => {
-    // Интервал обновления в миллисекундах
-    const updateInterval = 500; // 500 ms = 0.5 сек
+  };
 
-    // Функция для обновления URL плитки
-    const updateTileLayer = () => {
-      if (weatherRef.current) {
-        // Создаем новый URL с уникальной меткой времени для каждой загрузки
-        const currentTimestamp = Date.now();
-        const newUrl = `https://tilecache.rainviewer.com/v2/radar/nowcast_b3d71d1df9af/256/{z}/{x}/{y}/1/0_0.png?timestamp=${currentTimestamp}`;
-        
-        // Обновляем URL TileLayer
-        weatherRef.current.setUrl(newUrl);
+
+  useEffect(() => {
+    const checkMapReady = () => {
+      const map = mapRef.current;
+      if (!map) {
+        setTimeout(checkMapReady, 100);
+        return;
       }
+
+      const onDblClick = (e: L.LeafletMouseEvent) => {
+        if(ignoreTap) return;
+
+        ignoreTap = true;
+        handleMapDoubleClick(e);
+        
+        setTimeout(() => {
+          ignoreTap = false;
+        }, 300);
+      };
+
+      map.on('dblclick', onDblClick);
+      const detachTapHandler = attachTapHandler(map);
+
+      return () => {
+        map.off('dblclick', onDblClick);
+        detachTapHandler?.();
+      };
     };
 
-    // Настроим таймер для обновления
-    const intervalId = setInterval(updateTileLayer, updateInterval);
+    const cleanup = checkMapReady();
 
-    // Очистка таймера при удалении компонента
-    return () => clearInterval(intervalId);
-  }, []);*/
+    return () => {
+      if (typeof cleanup === 'function') {
+        cleanup();
+      }
+    };
+  }, []);
 
   {/* ============================================
       ============      RENDER    ================
       ============================================ 
     */}
 
-  if (typeof window == 'undefined' || !data) {
-    return (
-      <></>
-    )
+  if (typeof window == 'undefined' || !data || !data.startCoordinates) {
+    return <></>;
   }
 
 
   return (
     <MapContainer
       ref={(map) => { mapRef.current = map; }}
-      center={data.startCoordinates || defaultCenter}
+      center={data.startCoordinates}
       zoom={13}
       className='map-container'
-      style={{touchAction: "manipulation"}}
+      doubleClickZoom={false}
     >
 
       { /*  ===================================== */
@@ -165,6 +157,7 @@ const MapComponent = (
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         opacity={1}
         attribution='OpenStreetMap'
+        className='main-map'
       />
 
       {/* TomTom Traffic - Additional */}
@@ -191,7 +184,7 @@ const MapComponent = (
           attribution='RainViewer API'
         />
       )}
-      
+
 
       {/* ================================ */}
       {/* ==== MARKERS AND ROUTE LINE ==== */}
@@ -204,14 +197,21 @@ const MapComponent = (
         </Marker>
       )}
       {data.additionalPoints && data.additionalPoints.map((point, i) => (
-        <Marker key={i} position={[point.lat, point.lng]} icon={destinationIcon}>
+        <Marker key={i} position={[point.lat, point.lng]} icon={checkIcon}>
           <Popup>
             Проміжна точка
           </Popup>
         </Marker>
       ))}
+      {data.targetDestination && (
+        <Marker position={[data.targetDestination.lat, data.targetDestination.lng]} icon={carIcon}>
+          <Popup>
+            Авто для евакуації
+          </Popup>
+        </Marker>
+      )}
       {data.endCoordinates && (
-        <Marker position={[data.endCoordinates.lat, data.endCoordinates.lng]} icon={destinationIcon}>
+        <Marker position={[data.endCoordinates.lat, data.endCoordinates.lng]} icon={endIcon}>
           <Popup>
             Точка призначення
           </Popup>

@@ -7,6 +7,9 @@ import PointsContainer from '@/components/PointsContainer/PointsContainer';
 import WaySearchPanel from '@/components/WaySearchPanel/WaySearchPanel';
 import Header from '@/components/Header/Header';
 import FunctionalButtons from '@/components/FunctionalButtons/FunctionalButtons';
+import { Roles } from '@/types/db';
+import SosButton from '@/components/SosButton/SosButton';
+import DriverRequests from '@/components/DriverRequests/DriverRequests';
 const MapComponent = dynamic(() => import('@/components/MapComponent/MapComponent'), { ssr: false });
 
 
@@ -15,6 +18,7 @@ const HomePage = () => {
   const [data, setData] = useState<PageData>({
     startCoordinates: null,
     endCoordinates: null,
+    targetDestination: null,
     additionalPoints: [],
     error: null,
     route: null,
@@ -25,15 +29,37 @@ const HomePage = () => {
     isWeatherDrawed: false,
   });
 
+  const [isLoggedIn, setLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState<number | undefined>(undefined);
+
   useEffect(() => {
     const buildRoute = async () => {
-      if (data.startCoordinates && data.endCoordinates) {
+      if (data.startCoordinates && (data.endCoordinates || data.additionalPoints.length > 0)) {
         try {
-          const allPoints = [
-            data.startCoordinates,
-            ...data.additionalPoints,
-            data.endCoordinates,
-          ];
+          let allPoints = [];
+
+
+          if(data.endCoordinates && data.targetDestination){
+            allPoints = [
+              data.startCoordinates,
+              ...data.additionalPoints,
+              data.targetDestination,
+              data.endCoordinates,
+            ];
+          }
+          else if (data.endCoordinates) {
+            allPoints = [
+              data.startCoordinates,
+              ...data.additionalPoints,
+              data.endCoordinates,
+            ];
+          }
+          else {
+            allPoints = [
+              data.startCoordinates,
+              ...data.additionalPoints
+            ]
+          }
 
           const route = await fetchRoute(allPoints, setData);
           if (route) {
@@ -58,11 +84,19 @@ const HomePage = () => {
     data.additionalPoints
   ]);
 
+  useEffect(() => {
+    if (isLoggedIn && localStorage.getItem("user_role")) {
+      setUserRole(Number.parseInt(localStorage.getItem("user_role") as string));
+    }
+  }, [isLoggedIn]);
 
 
   return (
     <div className='wrapper'>
-      <Header/>
+      <Header
+        loggedIn={isLoggedIn}
+        setLoggedIn={setLoggedIn}
+      />
 
       <p style={{ color: 'red' }} id='error-p'>{data.error ?? " "}</p>
 
@@ -71,13 +105,22 @@ const HomePage = () => {
         setData={setData}
       />
 
-      
-<FunctionalButtons
-    data={data}
-    setData={setData}
-  /> 
+      <FunctionalButtons
+        data={data}
+        setData={setData}
+      />
 
-
+      {userRole == Roles.user && (
+        <SosButton
+          userData={data}
+        />
+      )}
+      {userRole == Roles.driver && data.startCoordinates && (
+        <DriverRequests
+          data={data}
+          setData={setData}
+        />
+      )}
 
       {data.distance != null && data.duration != null && (
         <div className='way-info'>
@@ -91,15 +134,25 @@ const HomePage = () => {
         setData={setData}
       />
 
-
-
-      {data.startCoordinates || data.endCoordinates ? (
+      {data.startCoordinates ? (
         <MapComponent
           data={data}
           setData={setData}
         />
       ) : (
-        <p className='map-container'>Введіть адреси для відображення карти.</p>
+        <p
+          className='map-container'
+          style={{
+            textAlign: "center",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            height: "90vh",
+            textDecoration: "underline"
+          }}
+        >
+          Введіть адреси для відображення карти.
+        </p>
       )}
     </div>
   );
