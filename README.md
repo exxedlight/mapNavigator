@@ -1,5 +1,7 @@
 **-- MAP NAVIGATOR FOR THE TRUCK SERVICE --**
+
 Extended [_Standalone version_](https://github.com/exxedlight/mapNavigator_standalone), adapted for the truck purpose.
+
 Includes **backend logic** in the same project, **MySql** DB.
 ------------------------------------------------------------
 
