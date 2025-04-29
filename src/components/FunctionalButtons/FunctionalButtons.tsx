@@ -13,10 +13,10 @@ const FunctionalButtons = (
       setData((prev) => ({
         ...prev,
         isDeviceGeoUsed: false,
-        route: null,
-        startCoordinates: null,
+        /*route: null,*/
+        /*startCoordinates: null,
         endCoordinates: null,
-        additionalPoints: []
+        additionalPoints: []*/
       }));
       return;
     }

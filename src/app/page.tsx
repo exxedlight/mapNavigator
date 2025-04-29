@@ -22,6 +22,7 @@ const HomePage = () => {
     additionalPoints: [],
     error: null,
     route: null,
+    currentRequest: null,
     distance: 0,
     duration: 0,
     isDeviceGeoUsed: false,
@@ -84,12 +85,28 @@ const HomePage = () => {
     data.additionalPoints
   ]);
 
+  const loadCurrentRequestIfExists = () => {
+    const currentReqString = localStorage.getItem("current_req");
+    if (currentReqString) {
+        try {
+            const currentReq = JSON.parse(currentReqString);
+            setData((prev) => ({
+                ...prev,
+                currentRequest: currentReq,
+            }));
+            alert(123);
+        } catch (error) {
+            console.error("Failed to parse current request from localStorage:", error);
+        }
+    }
+};
+
   useEffect(() => {
     if (isLoggedIn && localStorage.getItem("user_role")) {
       setUserRole(Number.parseInt(localStorage.getItem("user_role") as string));
+      loadCurrentRequestIfExists();
     }
   }, [isLoggedIn]);
-
 
   return (
     <div className='wrapper'>

@@ -59,6 +59,24 @@ const RequestCard = (
             route: route
         }));
     }
+    const takeThis = async () => {
+        const response = await fetch(`/api/requests/take`, {
+            method: "POST",
+            headers: {"content-type": "application/json"},
+            body: JSON.stringify({driverId: localStorage.getItem("user_id"), requestId: req.id}),
+        })
+        const result = await response.json();
+
+        if(!result.success){
+            alert("Помилка взяття замовлення, оновіть сторінку");
+        }
+
+        setData((prev) => ({
+            ...prev,
+            currentRequest: req
+        }));
+        localStorage.setItem("current_req", JSON.stringify(req));
+    }
 
     useEffect(() => {
         fetchAllData();
@@ -79,7 +97,7 @@ const RequestCard = (
             <div className="btns">
                 <button onClick={showRoute}>Показати маршрут</button>
 
-                <button>Прийняти</button>
+                <button onClick={takeThis}>Прийняти</button>
             </div>
 
         </div>

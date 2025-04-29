@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./style.css";
 import { PageData } from "@/interfaces/PageData";
 import { Statuses } from "@/types/db";
@@ -14,7 +14,9 @@ const SosButton = (
 
     const [called, setCalled] = useState(false);
     const [price, setPrice] = useState(0);
-    const [currentCallId, setCurrentCallId] = useState(-1);
+    let currentCallId = -1;
+    const intervalRef = useRef<number | null>(null);
+    const [waiting, setWaiting] = useState(false);
 
     useEffect(() => {
         if(userData.distance){
@@ -22,6 +24,41 @@ const SosButton = (
             setPrice(newPrice);
         }
     }, [userData.distance]);
+
+    useEffect(() => {
+        return () => {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+            }
+        };
+    }, [])
+
+    const checkRequestStatus = async () => {
+        if (currentCallId < 0) return;
+
+        try {
+            const response = await fetch(`/api/requests/checkTaked`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: currentCallId }),
+            });
+
+            const result = await response.json();
+
+            
+
+            if (result.success) {
+                alert("Ваш виклик прийнято, очікуйте водія");
+                setWaiting(true);
+                if (intervalRef.current) {
+                    clearInterval(intervalRef.current);
+                    intervalRef.current = null;
+                }
+            }
+        } catch (error) {
+            console.error("Error checking request status:", error);
+        }
+    };
 
     const handleSos = async () => {
         if(!userData.isDeviceGeoUsed){
@@ -42,7 +79,7 @@ const SosButton = (
                 headers: {"content-type":"application/json"},
                 body: JSON.stringify({id: currentCallId}),
             });
-            setCurrentCallId(-1);
+            currentCallId = -1;
         }
         else if(!called){
             {/* CALL EVAC */}
@@ -62,10 +99,17 @@ const SosButton = (
                 })
             });
             const {id} = await response.json();
-            setCurrentCallId(id);
+            currentCallId = id;
+            intervalRef.current = window.setInterval(checkRequestStatus, 1000);
         }
 
         setCalled(!called);
+    }
+    
+    if(waiting){
+        return (
+            <></>
+        )
     }
 
     return (
@@ -74,7 +118,10 @@ const SosButton = (
             style={{backgroundColor: called ? "orange" : "white"}}
             onClick={handleSos}
         >
-            <i className={`bx bx-phone-outgoing ${called && "bx-tada"}`}/>
+            {!waiting && (
+                <i className={`bx bx-phone-outgoing ${called && "bx-tada"}`}/>
+            )}
+            
             <label className="modal-price">{price} грн.</label>
             
         </div>

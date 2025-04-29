@@ -1,0 +1,44 @@
+.current-req-panel{
+    position: absolute;
+    z-index: 10;
+    top: 60%;
+    right: 5px;
+    background-color: rgba(0,0,0,.7);
+
+    width: 200px;
+    height: 200px;
+    padding: 10px;
+    border-radius: 20px;
+    border: 2px solid silver;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+
+    h2{
+        font-size: 1.1em;
+    }
+
+    label{
+        width: 100%;
+        text-align: left;
+    }
+
+    button{
+        width: 100%;
+        font-size: 1.1em;
+        border-radius: 10px;
+        margin: 10px 0;
+        background-color: rgba(255,255,255,.1);
+        padding: 5px 0;
+    }
+}
+
+.current-req-btns{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    width: 100%;
+}

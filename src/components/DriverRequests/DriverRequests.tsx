@@ -4,6 +4,7 @@ import "./style.css";
 import { useEffect, useState } from "react";
 import RequestCard from "./RequestCard/RequestCard";
 import { Request } from "@/types/db";
+import CurrentRequestPanel from "./CurrentRequestPanel/CurrentRequestPanel";
 
 const DriverRequests = (
     {data, setData}:MapComponentProps
@@ -31,6 +32,14 @@ const DriverRequests = (
         return (
             <i className='d-button open bx bx-list-ul' onClick={_ => setPanelVisible(true)}/>
         );
+    
+    if(data.currentRequest)
+        return (
+            <CurrentRequestPanel
+                data={data}
+                setData={setData}/>
+        )
+    
 
     return (
         <div className="driver-requests-panel">
