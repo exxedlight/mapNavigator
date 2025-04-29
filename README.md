@@ -1,10 +1,17 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+**-- MAP NAVIGATOR FOR THE TRUCK SERVICE --**
+Extended [_Standalone version_](https://github.com/exxedlight/mapNavigator_standalone), adapted for the truck purpose.
+Includes **backend logic** in the same project, **MySql** DB.
+------------------------------------------------------------
 
+This is a [Next.js](https://nextjs.org)
 ## Getting Started
 
-First, run the development server:
+Run the development server:
 
 ```bash
+npm i
+
+# then
 npm run dev
 # or
 yarn dev
@@ -14,23 +21,34 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**Demonstration:**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+LogIn panel:
+![image](https://github.com/user-attachments/assets/763bc682-2c64-4fc5-9fa8-d6bfc0f317c2)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**User:**
+Price for truck call:
+![image](https://github.com/user-attachments/assets/8fc1ae1b-3f54-445d-b618-c52f44780983)
 
-## Learn More
+Track calling:
+![image](https://github.com/user-attachments/assets/dce233d6-34d1-4845-a9d1-0363c759fa92)
 
-To learn more about Next.js, take a look at the following resources:
+**Driver:**
+List of requests:
+![image](https://github.com/user-attachments/assets/4e66ac85-98e6-426f-84e0-a92303edf893)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Show road:
+![image](https://github.com/user-attachments/assets/5ad5bd2d-6477-45a3-9972-f37a1d6aa716)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Get request:
+![image](https://github.com/user-attachments/assets/3bbbbec0-0399-42a0-8b2e-6ac48b7a3f2a)
 
-## Deploy on Vercel
+**User:**
+Seeing the request accepted:
+![image](https://github.com/user-attachments/assets/8197f441-9a69-42a7-bb4b-b439baa02ebe)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Driver:**
+Can mark the car was loaded:
+![image](https://github.com/user-attachments/assets/0a20b98d-4150-447f-b8fe-4aeb2c07dbd6)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Then, can mark that request done, it will reload the page to start over.
